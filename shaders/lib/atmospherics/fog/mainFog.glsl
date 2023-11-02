@@ -40,6 +40,12 @@
                 fogColorM *= atmColorMult;
             #endif
 
+            // Distant horizons blending
+            vec3 localPos = (gbufferModelViewInverse * vec4(lViewPos)).xyz;
+            localPos.y = 0;
+            float fragDistance = length(localPos);
+            fog = mix(fog, 0.0, smoothstep(0.0 * far, far, fragDistance));
+
             color = mix(color, fogColorM, fog);
 
             #ifndef GBUFFERS_WATER
@@ -125,6 +131,12 @@
             #ifdef ATM_COLOR_MULTS
                 fogColorM *= atmColorMult;
             #endif
+
+            // Distant horizons blending
+            vec3 localPos = (gbufferModelViewInverse * vec4(lViewPos)).xyz;
+            localPos.y = 0;
+            float fragDistance = length(localPos);
+            fog = mix(fog, 0.0, smoothstep(0.0 * far, far, fragDistance));
 
             color = mix(color, fogColorM, fog);
         }

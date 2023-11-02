@@ -35,6 +35,7 @@ in vec4 glColor;
 uniform int isEyeInWater;
 uniform int frameCounter;
 
+uniform float far;
 uniform float viewWidth;
 uniform float viewHeight;
 uniform float nightVision;
@@ -172,11 +173,13 @@ float GetMaxColorDif(vec3 color) {
 void main() {
 	vec4 color = texture2D(gtexture, texCoord);
 
+	if (color.a < (1.5/255.0)) {discard; return;}
+
 	float smoothnessD = 0.0, materialMask = 0.0, skyLightFactor = 0.0;
 	vec3 normalM = normal;
 
 	#if !defined POM || !defined POM_ALLOW_CUTOUT
-		if (color.a <= 0.00001) discard;
+		// if (color.a <= 0.00001) discard;
 	#endif
 
 	vec3 colorP = color.rgb;
@@ -336,6 +339,12 @@ void main() {
 		#endif
 	#endif
 
+	// Distant Horizons blending
+	vec3 localPos = (gbufferModelViewInverse * vec4(viewPos, 1.0)).xyz;
+	localPos.y = 0;
+	float fragDistance = length(localPos);
+	color.a *= 1.0 - smoothstep(0.5 * far, far, fragDistance);
+
 	/* DRAWBUFFERS:015 */
 	gl_FragData[0] = color;
 	gl_FragData[1] = vec4(smoothnessD, materialMask, skyLightFactor, 1 - 0.5 * subsurfaceMode);
@@ -410,7 +419,7 @@ void main() {
 	lmCoord  = GetLightMapCoordinates();
 
 	glColor = gl_Color;
-	if (glColor.a < 0.1) glColor.a = 1.0;
+	// if (glColor.a < 0.1) glColor.a = 1.0;
 
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 	upVec = normalize(gbufferModelView[1].xyz);
