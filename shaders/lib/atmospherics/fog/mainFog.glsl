@@ -40,6 +40,7 @@
                 fogColorM *= atmColorMult;
             #endif
 
+            // TODO: Remove when settings are added
             // Distant horizons blending
             vec3 localPos = (gbufferModelViewInverse * vec4(lViewPos)).xyz;
             localPos.y = 0;

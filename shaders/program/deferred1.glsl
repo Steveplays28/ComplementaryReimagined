@@ -437,14 +437,11 @@ void main() {
 			#endif
 		#endif
 		#ifdef NETHER
-			color.rgb = netherSkyColor;
-
 			#ifdef ATM_COLOR_MULTS
 				color.rgb *= atmColorMult;
 			#endif
 		#endif
 		#ifdef END
-			color.rgb = endSkyColor;
 			color.rgb += GetEnderStars(viewPos.xyz, VdotU);
 
 			#ifdef ATM_COLOR_MULTS
